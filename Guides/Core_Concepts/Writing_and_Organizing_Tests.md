@@ -81,7 +81,9 @@ describe('フック', function() {
 `cypress open`を使ってインタラクティブ モードで実行する場合、specファイルの変更が監視される。テストを追加したり更新したりした後すぐに、Cypressはリロードしてそのspecファイルのすべてのテストを実行する。
 
 ---
+
 `.only`を付加している場合は、そのテストだけに実行が制限される。
+
 ---
 
 ## 監視されるもの
@@ -100,7 +102,9 @@ describe('フック', function() {
 フォルダ以下、すべての階層のファイルが監視される。
 
 ---
+
 上記のフォルダはデフォルトのフォルダー パス。設定変更していれば、そのフォルダーが監視対象になる。
+
 ---
 
 ## 監視されないもの
@@ -110,3 +114,24 @@ describe('フック', function() {
 - `cypress/fixtures/`
 
 JavaScriptベースのアプリケーションの場合は、テストの実行時に変更が自動的に反映されることになる。
+
+## 設定
+
+`watchForFileChanges`の設定を`false`にすると、監視と自動再実行を行わなくなる。
+
+---
+
+`cypress run`の実行中は何も監視されない。  
+`watchForFileChanges`プロパティは`cypress open`を使ってCypressを実行している時のみ影響がある。
+
+---
+
+Cypressにおけるファイル監視は[Cypress Browserify Preprocessor](https://github.com/cypress-io/cypress-browserify-preprocessor)が担っている。  
+
+さらにファイル監視を制御する必要がある場合は、プリプロセッサーを明示的に設定できる。  
+何を監視対象とするか、変更が行われてからの自動再実行までの遅延時間を設定できる。
+
+他の[ファイル監視プリプロセッサー](https://github.com/cypress-io/cypress-watch-preprocessor)も提供しているが、使う場合は明示的に設定しなければならない。
+
+- [Cypress Watch Preprocessor](https://github.com/cypress-io/cypress-watch-preprocessor)
+- [Cypress webpack Preprocessor](https://github.com/cypress-io/cypress-webpack-preprocessor)
