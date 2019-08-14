@@ -153,3 +153,83 @@ it('何かしらusersを使う', function() {
 
 **Cypressのコマンドは非同期なので、`this.*`は`.as()`コマンドが実行されるまで使えない。**
 
+```javascript
+it('エイリアスを正しく使っていない', function() {
+  cy.fixture('users.json').as('users')
+
+  // これは動作しない
+  //
+  // this.users は定義されていない
+  // 'as'コマンドはキューに格納されただけで、まだ実行されていないため
+  const user = this.users[0]
+})
+```
+
+コマンドで生成されたオブジェクトにアクセスしたい場合は、`.then()`を使ったクロージャーの中で処理する必要がある。
+
+```javascript
+// すべてうまくいく
+cy.fixture('users.json').then((users) => {
+  // エイリアスを避けてコールバック関数を使える
+  const user = users[0]
+
+  // 通る
+  cy.get('header').should('contain', user.name)
+})
+```
+### `this`の使用を避ける
+
+---
+
+テストやフックで[アロー関数](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)を使っている場合、`this.*`のエイリアスでプロパティへアクセスできない。
+
+`function () {}`であれば動くが、`() => {}`では動かない。
+
+---
+
+`this.*`を使う代わりに、エイリアスへアクセスする他の方法がある。
+
+`cy.get()`コマンドは`@`を使った特殊な構文でエイリアスにアクセスできる。
+
+```javascript
+beforeEach(function () {
+  // usersフィクスチャにエイリアスを付与する
+  cy.fixture('users.json').as('users')
+})
+
+it('何かしらusersを使う', function () {
+  // エイリアスへアクセスするために特殊な'@'構文を使う
+  // そのことにより'this'を使わなくて済む
+  cy.get('@users').then((users) => {
+    // 引数のusersへアクセスする
+    const user = users[0]
+
+    // ヘッダーに1番目のユーザーの名前が含まれていることを確認する
+    cy.get('header').should('contain', user.name)
+  })
+})
+```
+
+`this.users`を使う時は同期的にアクセスする。`cy.get('@users')`を使う時は非同期にアクセスする。
+
+`cy.get('@users')`は[`cy.wrap(this.users)`](https://docs.cypress.io/api/commands/wrap.html)と同じと考えることができる。
+
+## 要素
+
+DOMの要素と一緒に使用される時、エイリアスは他の特殊な特徴を持つ。
+
+DOM要素にエイリアスを付与した後、後でアクセスする時に再利用できる。
+
+```javascript
+// テーブル内で見つかったすべてのtrに'rows'というエイリアスを付与する
+cy.get('table').find('tr').as('rows')
+```
+
+内部的に、Cypressは<tr>の集合に対して"rows"というエイリアスとして返される参照を生成している。同じ"rows"に後で参照するためには、`cy.get()`コマンドを使う。
+
+```javascript
+// Cypressは<tr>の集合への参照を返却する
+// そしてコマンドをつなげて1番目の行を探すことができる
+cy.get('@rows').first().click()
+```
+
