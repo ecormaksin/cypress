@@ -233,3 +233,54 @@ cy.get('table').find('tr').as('rows')
 cy.get('@rows').first().click()
 ```
 
+### 古い要素
+
+エイリアスを付与した要素が`cy.get()`で参照するまでに削除されていた場合、DOMを自動的に再検索する。
+
+---
+
+コマンドをつなげてからエイリアスを付与するのではなく、**可能な限り早い段階でエイリアスを付与する**のが推奨。
+分からなくなった時は、常に`cy.get()`を実行して要素を取得できる。
+
+---
+
+## ルート
+
+エイリアスは[ルート](https://docs.cypress.io/api/commands/route.html)にも付与できる。ルートにエイリアスを付与することにより次のことが可能になる:
+- アプリケーションに意図したリクエストをさせる
+- サーバーがレスポンスを返すのを待つ
+- アサーションのために実際のXHRオブジェクトへアクセスできる
+
+
+ルートにエイリアスを付与して完了するまで待機する例
+
+```javascript
+cy.server()
+cy.route('POST', '/users', { id: 123 }).as('postUser')
+
+cy.get('form').submit()
+
+cy.wait('@postUser').its('requestBody').should('have.property', 'name', 'Brian')
+
+cy.contains('Successfully created user: Brian')
+```
+
+## リクエスト
+
+リクエストにもエイリアスを付与できる。
+
+リクエストにエイリアスを付与して後でプロパティにアクセスする例
+
+```javascript
+cy.request('https://jsonplaceholder.cypress.io/comments').as('comments')
+
+// 他のテスト コード
+
+cy.get('@comments').should((response) => {
+  it (response.status === 200) {
+    expect(response).to.have.property('duration')
+  } else {
+    // チェックしたいことをなんでもチェックする
+  }
+})
+```
