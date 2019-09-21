@@ -81,3 +81,47 @@ $ cypress cache clear
 $ npm install cypress --save-dev
 ```
 
+## アプリ データのクリア
+
+### アプリ データのクリア方法
+1. Cypressを`cypress open`で開く
+1. `File` -> `View App Data`を選択する
+1. `cy`という名前のフォルダーが開かれる。
+1. `cy`フォルダーの中のすべてを削除する。
+1. Cypressを閉じて、もう1度開く。
+
+## テストのコマンドを1つ1つ実行する
+
+`.pause()`コマンドを使って、コマンドごとにテストを実行できる。
+
+```javascript
+it('項目を追加する', function() {
+  cy.pause()
+  cy.get('.new-todo')
+  // 追加のコマンド
+})
+```
+
+## デバッグ ログを出力する
+
+Cypressは[debug](https://github.com/visionmedia/debug)を使って構築されている。
+このモジュールをONにして実行することで、有益なデバッグ出力を受け取れる。
+**注意: **`DEBUG=...`を指定して実行すると、メッセージが大量に出力される。
+
+さらに学ぶには[コマンドライン](./Command_Line.md)と[よいロギング](https://glebbahmutov.com/blog/good-logging/)を参照。
+
+### ブラウザ上のデバッグ ログ
+
+`cypress open`の実行中に問題が見られるようなら、ブラウザーにデバッグ ログを出力できる。ブラウザーのディベロッパー ツールを開いて、`localStorage`プロパティをセットする。
+
+```javascript
+localStorage.debug = 'cypress*'
+
+// デバッグ メッセージを無効にする
+delete localStorage.debug
+```
+
+ブラウザーをリロードすると、ディベロッパー ツールのコンソールでデバッグ メッセージが見えるようになる。
+
+## Cypressのイベントをログに記録する
+

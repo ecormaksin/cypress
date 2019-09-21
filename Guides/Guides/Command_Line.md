@@ -76,3 +76,42 @@ $ cypress run [options]
 | `--reporter`, `-r` | Mochaレポーターを指定する |
 | `--reporter-options`, `-o` | Mochaレポーターのオプションを指定する |
 | `--spec`, `-s` | 実行するスペック ファイルを指定する |
+
+# コマンドのデバッグ
+
+Cypressは[debug](https://github.com/visionmedia/debug)を使って構築されている。
+`cypress open`や`cypress run`の前にこのモジュールをONにして実行することで、有益なデバッグ出力を受け取れる。
+
+### MacやLinux:
+
+```shell
+$ DEBUG=cypress:* cypress open
+```
+
+### Windows
+
+```shell
+$ set DEBUG=cypress:*
+```
+
+```shell
+$ cypress open
+```
+
+Cypressは多くのサブ モジュールを含む巨大で複雑なプロジェクトなので、デフォルトの出力だとその量に圧倒されることになってしまう。
+
+### デバッグ出力を特定のモジュールにフィルターするには
+
+```shell
+$ DEBUG=cypress:cli cypress run
+```
+
+```shell
+$ DEBUG=cypress:launcher cypress run
+```
+
+あるいは3段階の階層のサブモジュールでもフィルターできる
+
+```shell
+$ DEBUG=cypress:server:project cypress run
+```
